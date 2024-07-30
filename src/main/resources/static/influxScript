@@ -1,0 +1,34 @@
+option task = {
+  name: "Downsample By 1 Min",
+  every: 1m,
+  offset: 5s
+}
+
+from (bucket: "BinanceStream")
+    |> range(start: -1m)
+    |> filter(fn: (r) => r["_measurement"] == "KlineStream")
+    |> filter(fn: (r) => r["_field"] == "highPrice")
+    |> max(column: "_value")
+    |> to(bucket: "BinanceStreamAggr")
+
+from (bucket: "BinanceStream")
+    |> range(start: -1m)
+    |> filter(fn: (r) => r["_measurement"] == "KlineStream")
+    |> filter(fn: (r) => r["_field"] == "lowPrice")
+    |> min(column: "_value")
+    |> to(bucket: "BinanceStreamAggr")
+
+from (bucket: "BinanceStream")
+    |> range(start: -1m)
+    |> filter(fn: (r) => r["_measurement"] == "KlineStream")
+    |> filter(fn: (r) => r["_field"] == "openPrice")
+    |> first(column: "_value")
+    |> to(bucket: "BinanceStreamAggr")
+
+from (bucket: "BinanceStream")
+    |> range(start: -1m)
+    |> filter(fn: (r) => r["_measurement"] == "KlineStream")
+    |> filter(fn: (r) => r["_field"] == "closePrice")
+    |> last(column: "_value")
+    |> to(bucket: "BinanceStreamAggr")
+
